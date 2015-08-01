@@ -16,9 +16,10 @@ class Server {
     
     // Events
     
-    var connect = EventEmitter1<Socket>()
-    var error = ErrorEventEmitter()
+    var connect   = EventEmitter1<Socket>()
+    var error     = ErrorEventEmitter()
     var listening = EventEmitter0()
+    var closed    = EventEmitter0()
     
     init() {
         self.server = Handle()
@@ -58,12 +59,10 @@ class Server {
         self.listening.emit()
     }
     
-    func close() {
-        // close all clients
-        for client in self.clients {
-            client.close()
+    func close(callback: (() -> ())? = nil) {
+        if let callback = callback {
+            self.closed.once(callback)
         }
-
         self.server.close()
     }
     
@@ -78,6 +77,8 @@ class Server {
             if let client = client {
                 self.clients.remove(client)
             }
+            
+            self.emitClosed()
         }
         
         let result = uv_accept(UnsafeMutablePointer<uv_stream_t>(self.server.handle), client.handle)
@@ -89,6 +90,12 @@ class Server {
         else {
             self.connect.emit(client)
             client.resume()
+        }
+    }
+    
+    private func emitClosed() {
+        if self.server.closed && self.clients.count == 0 {
+            self.closed.emit()
         }
     }
 }

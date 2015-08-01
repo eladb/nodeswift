@@ -20,16 +20,21 @@ func testNet() {
                 print(str, appendNewline: false)
                 let command = str.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
                 if command == "terminate" {
+                    print("No more connections")
                     server.close()
                 }
             }
         }
         connection.end.once {
-            print("done")
+            print("EOF")
         }
+        
         connection.closed.once {
             print("closed")
-//            connection.data.removeListener(dataL)
         }
+    }
+    
+    server.closed.once {
+        print("server closed")
     }
 }
