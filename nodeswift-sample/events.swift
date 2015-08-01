@@ -13,7 +13,6 @@ class EventHandler: Hashable, Equatable {
     let ptr = UnsafeMutablePointer<Int8>.alloc(1)
     var hashValue: Int { return ptr.hashValue }
     deinit { self.ptr.dealloc(1) }
-
     var callback: (([AnyObject]) -> ())?
     init(_ callback: (([AnyObject]) -> ())?) {
         self.callback = callback
@@ -26,11 +25,7 @@ func ==(lhs: EventHandler, rhs: EventHandler) -> Bool {
 
 class EventEmitter {
     private var handlers = Set<EventHandler>();
-    func debug(s: AnyObject) {
-        
-    }
     func emit(args: [AnyObject]) -> Int {
-        debug("emit (\(self.handlers.count) handlers)")
         var calls = 0
         for handler in self.handlers {
             if let callback = handler.callback {
@@ -41,17 +36,14 @@ class EventEmitter {
         return calls
     }
     func addListener(listener: (([AnyObject]) -> ())?) -> EventHandler {
-        debug("addListener (\(self.handlers.count) handlers)")
         let handler = EventHandler(listener)
         self.handlers.insert(handler)
         return handler
     }
     func removeListener(handler: EventHandler) {
-        debug("removeListener (\(self.handlers.count) handlers)")
         self.handlers.remove(handler)
     }
     func once(listener: ([AnyObject]) -> ()) -> EventHandler {
-        debug("once (\(self.handlers.count) handlers)")
         let handler = self.addListener(nil)
         handler.callback = { args in
             listener(args)
@@ -60,7 +52,6 @@ class EventEmitter {
         return handler
     }
     func on(listener: ([AnyObject]) -> ()) -> EventHandler {
-        debug("on (\(self.handlers.count) handlers)")
         return self.addListener(listener)
     }
 }

@@ -41,7 +41,9 @@ class Socket: Hashable, Equatable {
     }
     
     func close() {
-        self.tcp.close();
+        self.tcp.close {
+            self.closed.emit()
+        }
     }
     
     private func ondata(args: [AnyObject]) {

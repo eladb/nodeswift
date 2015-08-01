@@ -9,7 +9,6 @@
 import Foundation
 
 func setTimeout(timeout: UInt64, callback: (() -> ())? = nil) -> Handle<uv_timer_t> {
-    
     let handle = Handle<uv_timer_t>()
     handle.callback = { _ in callback?() }
     uv_timer_init(uv_default_loop(), handle.handle)

@@ -30,8 +30,12 @@ class RawHandle: Hashable, Equatable {
     }
     
     deinit {
-        print("RawHandle deinit \(RawHandle.handles.count)")
-        assert(self.rawhandle_ == nil, "handles must be explicitly closed with close()")
+        assert(self.rawhandle_ == nil, "Handles must be explicitly closed with close()")
+    }
+    
+    // Returns true if the handle is closed
+    var closed: Bool {
+        return self.rawhandle_ == nil
     }
     
     var hashValue: Int {
@@ -47,6 +51,8 @@ class RawHandle: Hashable, Equatable {
     }
     
     func close(callback: (() -> ())? = nil) {
+        if self.closed { return }
+        
         let handle = self.rawhandle
         
         // call close and dealloc the handle at the end

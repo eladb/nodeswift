@@ -17,7 +17,6 @@ class Buffer {
         self.nlen = nlen
     }
     deinit {
-        print("buffer deallocated")
         self.buf.memory.base.dealloc(self.buf.memory.len)
     }
     var buffer: UnsafeMutableBufferPointer<Int8> {

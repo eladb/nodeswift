@@ -13,21 +13,23 @@ func testNet() {
     server.listen(5000)
     print("Listening on TCP port 5000")
     
-//    setInterval(1000)
-//    setTimeout(10000) {
-//        print("closing server")
-//        server.close()
-//    }
-//    
     server.connect.on { connection in
         print("connected: \(connection)")
         connection.data.on { data in
             if let str = data.stringContents {
                 print(str, appendNewline: false)
+                let command = str.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+                if command == "terminate" {
+                    server.close()
+                }
             }
         }
-        connection.end.on {
+        connection.end.once {
             print("done")
+        }
+        connection.closed.once {
+            print("closed")
+//            connection.data.removeListener(dataL)
         }
     }
 }

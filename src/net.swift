@@ -18,6 +18,7 @@ class Server {
     
     var connect = EventEmitter1<Socket>()
     var error = ErrorEventEmitter()
+    var listening = EventEmitter0()
     
     init() {
         self.server = Handle()
@@ -29,8 +30,13 @@ class Server {
         print("Server deinit")
     }
     
-    func listen(port: Int, host: String = "0.0.0.0", backlog: Int32 = 511, callback: ((Error?) -> ())? = nil) {
+    func listen(port: Int, host: String = "0.0.0.0", backlog: Int32 = 511, callback: (() -> ())? = nil) {
 
+        // if callback is provided, add it as a handler to the 'listening' event
+        if let callback = callback {
+            self.listening.once(callback)
+        }
+        
         // bind to address
         let addr = UnsafeMutablePointer<sockaddr_in>.alloc(1);
         uv_ip4_addr(host.cStringUsingEncoding(0)!, Int32(port), addr)
@@ -38,25 +44,18 @@ class Server {
         addr.dealloc(1)
 
         if let err = Error(result: result) {
-            if let callback = callback {
-                callback(err)
-            }
-            else {
-                self.error.emit(err)
-            }
+            self.error.emit(err)
             return
         }
         
         let listen_result = uv_listen(UnsafeMutablePointer<uv_stream_t>(server.handle), backlog, connection_cb)
         if let err = Error(result: listen_result) {
-            if let callback = callback {
-                callback(err)
-            }
-            else {
-                self.error.emit(err)
-            }
+            self.error.emit(err)
             return
         }
+        
+        // ok. we are ready. emit the listening event
+        self.listening.emit()
     }
     
     func close() {
@@ -69,17 +68,16 @@ class Server {
     }
     
     func onconnect(args: [AnyObject]) {
-        // initialize client stream
         
+        // initialize client stream
         let client = Socket()
 
-        // manage clients set
+        // manage clients set (notice the weak reference!)
         self.clients.insert(client)
-        
-        print("registrying to receive end event")
-        client.closed.once {
-            print("removing client from clients list")
-            self.clients.remove(client)
+        client.closed.once { [weak client] in
+            if let client = client {
+                self.clients.remove(client)
+            }
         }
         
         let result = uv_accept(UnsafeMutablePointer<uv_stream_t>(self.server.handle), client.handle)
