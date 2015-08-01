@@ -11,10 +11,14 @@ import Foundation
 func testNet() {
     let server = Server()
     server.listen(5000)
-    print("Listening on TCP port 5000")
+    
+    server.listening.once {
+        print("Listening on TCP port 5000")
+    }
     
     server.connect.on { connection in
-        print("connected: \(connection)")
+        print("new connection")
+        
         connection.data.on { data in
             if let str = data.stringContents {
                 for client in server.clients {

@@ -55,8 +55,10 @@ class Server {
             return
         }
         
-        // ok. we are ready. emit the listening event
-        self.listening.emit()
+        // ok. we are ready. emit the listening event on next tick
+        nextTick {
+            self.listening.emit()
+        }
     }
     
     func close(callback: (() -> ())? = nil) {
