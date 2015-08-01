@@ -9,7 +9,7 @@
 import Foundation
 
 func setTimeout(timeout: UInt64, callback: (() -> ())? = nil) -> Handle<uv_timer_t> {
-    let handle = Handle<uv_timer_t>()
+    let handle = Handle<uv_timer_t>(closable: true)
     handle.callback = { _ in callback?() }
     uv_timer_init(uv_default_loop(), handle.handle)
     uv_timer_start(handle.handle, { handle in RawHandle.callback(handle, args: [], autoclose: true) }, timeout, 0)
@@ -22,7 +22,7 @@ func clearTimeout(handle: Handle<uv_timer_t>) {
 }
 
 func setInterval(interval: UInt64, callback: (() -> ())? = nil) -> Handle<uv_timer_t> {
-    let handle = Handle<uv_timer_t>()
+    let handle = Handle<uv_timer_t>(closable: true)
     handle.callback = { _ in callback?() }
     uv_timer_init(uv_default_loop(), handle.handle)
     uv_timer_start(handle.handle, { handle in RawHandle.callback(handle, args: [], autoclose: false) }, interval, interval)

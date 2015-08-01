@@ -19,8 +19,8 @@ func testHandleMemoryManagement() {
     class DummyHandle: Handle<uv_tcp_t> {
         static var objectCounter = 0;
         static var callbackCounter = 0;
-        override init() {
-            super.init()
+        init() {
+            super.init(closable: true)
             DummyHandle.objectCounter++
             uv_tcp_init(uv_default_loop(), self.handle)
             self.callback = { _ in DummyHandle.callbackCounter++ }

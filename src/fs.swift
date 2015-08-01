@@ -9,7 +9,7 @@
 import Foundation
 
 func mkdir(path: String, mode: Int32, callback: (Error?) -> ()) {
-    let req = Handle<uv_fs_t>()
+    let req = Handle<uv_fs_t>(closable: false)
     req.callback = { args in
         let result = req.handle.memory.result
         let err = Error(result: result)

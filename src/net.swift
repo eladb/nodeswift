@@ -22,7 +22,7 @@ class Server {
     var closed    = EventEmitter0()
     
     init() {
-        self.server = Handle()
+        self.server = Handle(closable: true)
         self.server.callback = self.onconnect
         uv_tcp_init(uv_default_loop(), self.server.handle)
     }
@@ -66,7 +66,7 @@ class Server {
         self.server.close()
     }
     
-    func onconnect(args: [AnyObject]) {
+    func onconnect(args: [AnyObject?]) {
         
         // initialize client stream
         let client = Socket()

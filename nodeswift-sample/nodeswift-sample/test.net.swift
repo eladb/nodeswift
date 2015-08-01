@@ -17,6 +17,9 @@ func testNet() {
         print("connected: \(connection)")
         connection.data.on { data in
             if let str = data.stringContents {
+                for client in server.clients {
+                    client.write(str)
+                }
                 print(str, appendNewline: false)
                 let command = str.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
                 if command == "terminate" {

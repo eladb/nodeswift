@@ -12,17 +12,21 @@ import Foundation
 class RawHandle: Hashable, Equatable {
     private static var handles = Dictionary<UnsafeMutablePointer<Void>, RawHandle>()
     
+    private var hash = UnsafeMutablePointer<Int8>.alloc(1)
     private var rawhandle_: UnsafeMutablePointer<uv_handle_t>?
     private var dealloc: (UnsafeMutablePointer<Void>) -> ()
-    var callback: ((args: [AnyObject]) -> ())?
+    private let closable: Bool
+    
+    var callback: ((args: [AnyObject?]) -> ())?
 
     var rawhandle: UnsafeMutablePointer<uv_handle_t> {
         return self.rawhandle_!
     }
     
-    init(alloc: () -> UnsafeMutablePointer<Void>, dealloc: (UnsafeMutablePointer<Void>) -> ()) {
+    init(alloc: () -> UnsafeMutablePointer<Void>, dealloc: (UnsafeMutablePointer<Void>) -> (), closable: Bool) {
         self.rawhandle_ = UnsafeMutablePointer<uv_handle_t>(alloc())
         self.dealloc = dealloc
+        self.closable = closable
         
         // this acts as a refcount++
         // we are using the handle itself as the key to the dictionary
@@ -31,6 +35,7 @@ class RawHandle: Hashable, Equatable {
     
     deinit {
         assert(self.rawhandle_ == nil, "Handles must be explicitly closed with close()")
+        self.hash.dealloc(1)
     }
     
     // Returns true if the handle is closed
@@ -39,37 +44,35 @@ class RawHandle: Hashable, Equatable {
     }
     
     var hashValue: Int {
-        assert(self.rawhandle_ != nil, "Trying to access a released handle")
-        return self.rawhandle_!.hashValue
+        return self.hash.hashValue
     }
     
-    func call(args: [AnyObject] = [], autoclose: Bool) {
-        self.callback?(args: args)
-        if autoclose {
-            self.close()
-        }
+    func release() {
+        RawHandle.handles.removeValueForKey(self.rawhandle)
+        self.dealloc(UnsafeMutablePointer<Void>(self.rawhandle))
+        self.rawhandle_ = nil
+        self.callback = nil
     }
     
     func close(callback: (() -> ())? = nil) {
         if self.closed { return }
         
-        let handle = self.rawhandle
-        
-        // call close and dealloc the handle at the end
-        self.callback = { _ in
-            callback?()
-
-            // remove handle from allocation map, which means it will deinit
-            RawHandle.handles.removeValueForKey(handle)
-            self.dealloc(UnsafeMutablePointer<Void>(self.rawhandle_!))
-            self.rawhandle_ = nil
-            self.callback = nil
+        if self.closable {
+            // call close and dealloc the handle at the end
+            self.callback = { _ in
+                self.release()
+                callback?()
+            }
+            
+            uv_close(self.rawhandle, close_cb)
         }
-        
-        uv_close(self.rawhandle, close_cb)
+        else {
+            self.release()
+            callback?()
+        }
     }
 
-    static func callback(handle: UnsafeMutablePointer<Void>, args: [AnyObject] = [], autoclose: Bool) {
+    static func callback(handle: UnsafeMutablePointer<Void>, args: [AnyObject?] = [], autoclose: Bool) {
         let rawhandle = UnsafeMutablePointer<uv_handle_t>(handle)
         if let handle = RawHandle.handles[rawhandle] {
             handle.callback?(args: args)
@@ -85,10 +88,11 @@ func ==(lhs: RawHandle, rhs: RawHandle) -> Bool {
 }
 
 class Handle<T>: RawHandle {
-    init() {
+    init(closable: Bool) {
         super.init(
             alloc: { return UnsafeMutablePointer<Void>(UnsafeMutablePointer<T>.alloc(1)) },
-            dealloc: { (h: UnsafeMutablePointer<Void>) in UnsafeMutablePointer<T>(h).dealloc(1) }
+            dealloc: { (h: UnsafeMutablePointer<Void>) in UnsafeMutablePointer<T>(h).dealloc(1) },
+            closable: closable
         )
     }
     

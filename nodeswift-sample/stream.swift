@@ -27,13 +27,23 @@ class Socket: Hashable, Equatable {
     var closed = EventEmitter0()
     
     init() {
-        self.tcp = Handle()
+        self.tcp = Handle(closable: true)
         self.tcp.callback = self.ondata
         uv_tcp_init(uv_default_loop(), self.tcp.handle)
     }
     
     deinit {
         print("Socket deinit")
+    }
+    
+    func write(string: String, callback: ((Error?) -> ())? = nil) {
+        let req = Handle<uv_write_t>(closable: false)
+        req.callback = { args in callback?(args[0] as? Error) }
+        if let cString = string.cStringUsingEncoding(NSUTF8StringEncoding) {
+            let buf = UnsafeMutablePointer<uv_buf_t>.alloc(1)
+            buf.memory = uv_buf_init(UnsafeMutablePointer<Int8>(cString), UInt32(cString.count))
+            uv_write(req.handle, self.handle, UnsafePointer<uv_buf_t>(buf), 1, write_cb)
+        }
     }
     
     func resume() {
@@ -46,7 +56,7 @@ class Socket: Hashable, Equatable {
         }
     }
     
-    private func ondata(args: [AnyObject]) {
+    private func ondata(args: [AnyObject?]) {
         let event = args[0] as! String
         if event == "data" {
             self.data.emit(args[1] as! Buffer)
@@ -74,6 +84,10 @@ private func read_cb(handle: UnsafeMutablePointer<uv_stream_t>, nread: Int, buf:
     // buf will be deallocated on Buffer deinit
     let buffer = Buffer(autoDealloc: buf, nlen: nread)
     RawHandle.callback(handle, args: [ "data", buffer ], autoclose: false)
+}
+
+private func write_cb(handle: UnsafeMutablePointer<uv_write_t>, status: Int32) {
+    RawHandle.callback(handle, args: [ Error(result: status) ], autoclose: true)
 }
 
 func ==(lhs: Socket, rhs: Socket) -> Bool {
