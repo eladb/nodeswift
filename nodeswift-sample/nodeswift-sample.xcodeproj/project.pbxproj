@@ -13,6 +13,13 @@
 		F40ACAAB1B655621007BD21D /* fs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40ACAA51B655621007BD21D /* fs.swift */; };
 		F40ACAAC1B655621007BD21D /* handles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40ACAA61B655621007BD21D /* handles.swift */; };
 		F40ACAAE1B655621007BD21D /* timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40ACAA91B655621007BD21D /* timer.swift */; };
+		F40ACAB41B655730007BD21D /* net.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40ACAB31B655730007BD21D /* net.swift */; };
+		F44EABC71B6CC607009F2286 /* buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EABC61B6CC607009F2286 /* buffer.swift */; };
+		F44EABCB1B6CF2A5009F2286 /* test.timers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EABCA1B6CF2A5009F2286 /* test.timers.swift */; };
+		F44EABCD1B6CF2DC009F2286 /* test.fs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EABCC1B6CF2DC009F2286 /* test.fs.swift */; };
+		F44EABCF1B6CF2F6009F2286 /* test.net.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EABCE1B6CF2F6009F2286 /* test.net.swift */; };
+		F4D345B81B67AEC8002B9760 /* events.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D345B71B67AEC8002B9760 /* events.swift */; };
+		F4D345BA1B6C0450002B9760 /* stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D345B91B6C0450002B9760 /* stream.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,6 +43,13 @@
 		F40ACAA61B655621007BD21D /* handles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = handles.swift; path = ../src/handles.swift; sourceTree = "<group>"; };
 		F40ACAA91B655621007BD21D /* timer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = timer.swift; path = ../src/timer.swift; sourceTree = "<group>"; };
 		F40ACAAF1B655664007BD21D /* nodeswift-sample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "nodeswift-sample-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
+		F40ACAB31B655730007BD21D /* net.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = net.swift; path = ../src/net.swift; sourceTree = "<group>"; };
+		F44EABC61B6CC607009F2286 /* buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = buffer.swift; sourceTree = "<group>"; };
+		F44EABCA1B6CF2A5009F2286 /* test.timers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = test.timers.swift; sourceTree = "<group>"; };
+		F44EABCC1B6CF2DC009F2286 /* test.fs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = test.fs.swift; sourceTree = "<group>"; };
+		F44EABCE1B6CF2F6009F2286 /* test.net.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = test.net.swift; sourceTree = "<group>"; };
+		F4D345B71B67AEC8002B9760 /* events.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = events.swift; sourceTree = "<group>"; };
+		F4D345B91B6C0450002B9760 /* stream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = stream.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +87,9 @@
 			children = (
 				F40ACAAF1B655664007BD21D /* nodeswift-sample-Bridging-Header.h */,
 				F40ACA9A1B6555A6007BD21D /* main.swift */,
+				F44EABCA1B6CF2A5009F2286 /* test.timers.swift */,
+				F44EABCC1B6CF2DC009F2286 /* test.fs.swift */,
+				F44EABCE1B6CF2F6009F2286 /* test.net.swift */,
 			);
 			path = "nodeswift-sample";
 			sourceTree = "<group>";
@@ -84,6 +101,10 @@
 				F40ACAA51B655621007BD21D /* fs.swift */,
 				F40ACAA61B655621007BD21D /* handles.swift */,
 				F40ACAA91B655621007BD21D /* timer.swift */,
+				F40ACAB31B655730007BD21D /* net.swift */,
+				F4D345B71B67AEC8002B9760 /* events.swift */,
+				F4D345B91B6C0450002B9760 /* stream.swift */,
+				F44EABC61B6CC607009F2286 /* buffer.swift */,
 			);
 			name = nodeswift;
 			sourceTree = "<group>";
@@ -147,9 +168,16 @@
 			files = (
 				F40ACAAA1B655621007BD21D /* errors.swift in Sources */,
 				F40ACAAB1B655621007BD21D /* fs.swift in Sources */,
+				F44EABCF1B6CF2F6009F2286 /* test.net.swift in Sources */,
+				F44EABCB1B6CF2A5009F2286 /* test.timers.swift in Sources */,
 				F40ACAAE1B655621007BD21D /* timer.swift in Sources */,
+				F44EABC71B6CC607009F2286 /* buffer.swift in Sources */,
+				F4D345BA1B6C0450002B9760 /* stream.swift in Sources */,
+				F44EABCD1B6CF2DC009F2286 /* test.fs.swift in Sources */,
+				F4D345B81B67AEC8002B9760 /* events.swift in Sources */,
 				F40ACA9B1B6555A6007BD21D /* main.swift in Sources */,
 				F40ACAAC1B655621007BD21D /* handles.swift in Sources */,
+				F40ACAB41B655730007BD21D /* net.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

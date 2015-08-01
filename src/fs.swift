@@ -9,13 +9,14 @@
 import Foundation
 
 func mkdir(path: String, mode: Int32, callback: (Error?) -> ()) {
-    let req = Handle<uv_fs_t> { handle in
-        let result = handle.handle.memory.result
+    let req = Handle<uv_fs_t>()
+    req.callback = { args in
+        let result = req.handle.memory.result
         let err = Error(result: result)
+        uv_fs_req_cleanup(req.handle)
         callback(err)
     }
     uv_fs_mkdir(uv_default_loop(), req.handle, (path as NSString).UTF8String, mode) { handle in
-        Handle.unwrap(handle).call().release()
-        uv_fs_req_cleanup(handle)
+        RawHandle.callback(handle, args: [], autoclose: true)
     }
 }

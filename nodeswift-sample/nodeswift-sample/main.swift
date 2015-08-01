@@ -8,25 +8,20 @@
 
 import Foundation
 
-var t1 = setInterval(1000) { print("tick") }
-var t2 = setInterval(1000) { print("tock") }
+//testNet()
 
-setTimeout(5000) {
-    print("Stopping intervals")
-    clearInterval(t1)
-    clearInterval(t2)
-}
-
-mkdir("/tmp/foogoo", mode: 0777) { err in
-    if let err = err {
-        print("error: \(err)")
+for i in 0..<100 {
+    print(i)
+    let h = Handle<uv_tcp_t>()
+    uv_tcp_init(uv_default_loop(), h.handle)
+    h.callback = { _ in print("callme") }
+    setTimeout(500) {
+        RawHandle.callback(h.handle, args: [], autoclose: true)
     }
 }
 
-mkdir("/tmp/succeed\(arc4random())", mode: 0777) { err in
-    print(err)
-}
+print("here")
+setInterval(1000)
 
 uv_run(uv_default_loop(), UV_RUN_DEFAULT)
-
-print("Done")
+while true { }
