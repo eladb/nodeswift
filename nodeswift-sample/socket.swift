@@ -12,7 +12,7 @@ class Socket: Hashable, Equatable {
 
     let tcp: Handle<uv_tcp_t>
     
-    var handle: UnsafeMutablePointer<uv_stream_t> {
+    var stream: UnsafeMutablePointer<uv_stream_t> {
         return UnsafeMutablePointer<uv_stream_t>(self.tcp.handle)
     }
     
@@ -26,6 +26,9 @@ class Socket: Hashable, Equatable {
     var end    = EventEmitter0()
     var closed = EventEmitter0()
     
+    var error     = ErrorEventEmitter()
+    var connected = EventEmitter0()
+    
     init() {
         self.tcp = Handle(closable: true)
         self.tcp.callback = self.ondata
@@ -36,22 +39,41 @@ class Socket: Hashable, Equatable {
         print("Socket deinit")
     }
     
+    func connect(port: UInt16, host: String = "localhost", connectionListener: (() -> ())? = nil) {
+
+        if let listener = connectionListener {
+            self.connected.once(listener)
+        }
+        
+        let connect = Handle<uv_connect_t>(closable: false)
+        connect.callback = self.onconnect
+        let addr = UnsafeMutablePointer<sockaddr_in>.alloc(1);
+        uv_ip4_addr(host.cStringUsingEncoding(NSUTF8StringEncoding)!, Int32(port), addr)
+        let result = uv_tcp_connect(connect.handle, self.tcp.handle, UnsafeMutablePointer<sockaddr>(addr), connect_cb)
+        addr.dealloc(1)
+
+        if let err = Error(result: result) {
+            nextTick { self.error.emit(err) }
+            return
+        }
+    }
+    
     func write(string: String, callback: ((Error?) -> ())? = nil) {
         let req = Handle<uv_write_t>(closable: false)
         req.callback = { args in callback?(args[0] as? Error) }
         if let cString = string.cStringUsingEncoding(NSUTF8StringEncoding) {
             let buf = UnsafeMutablePointer<uv_buf_t>.alloc(1)
             buf.memory = uv_buf_init(UnsafeMutablePointer<Int8>(cString), UInt32(cString.count))
-            uv_write(req.handle, self.handle, UnsafePointer<uv_buf_t>(buf), 1, write_cb)
+            uv_write(req.handle, self.stream, UnsafePointer<uv_buf_t>(buf), 1, write_cb)
         }
     }
     
     func resume() {
-        uv_read_start(self.handle, alloc_cb, read_cb)
+        uv_read_start(self.stream, alloc_cb, read_cb)
     }
     
     func pause() {
-        uv_read_stop(self.handle)
+        uv_read_stop(self.stream)
     }
     
     func close() {
@@ -70,6 +92,24 @@ class Socket: Hashable, Equatable {
             self.close()
         }
     }
+
+    private func onconnect(args: [AnyObject?]) {
+        if let err = args[0] as! Error? {
+            self.error.emit(err)
+        }
+        else {
+            self.connected.emit()
+
+            // start emitting data events
+            self.resume()
+        }
+    }
+    
+}
+
+private func connect_cb(handle: UnsafeMutablePointer<uv_connect_t>, result: Int32) {
+    let err = Error(result: result)
+    RawHandle.callback(handle, args: [ err ], autoclose: true)
 }
 
 private func alloc_cb(handle: UnsafeMutablePointer<uv_handle_t>, suggested_size: Int, buf: UnsafeMutablePointer<uv_buf_t>) {

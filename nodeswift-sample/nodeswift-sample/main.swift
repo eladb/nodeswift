@@ -8,6 +8,7 @@
 
 import Foundation
 
-testNet()
+//testNet()
+testClient()
 
 uv_run(uv_default_loop(), UV_RUN_DEFAULT)

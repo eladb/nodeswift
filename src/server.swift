@@ -40,7 +40,7 @@ class Server {
         
         // bind to address
         let addr = UnsafeMutablePointer<sockaddr_in>.alloc(1);
-        uv_ip4_addr(host.cStringUsingEncoding(0)!, Int32(port), addr)
+        uv_ip4_addr(host.cStringUsingEncoding(NSUTF8StringEncoding)!, Int32(port), addr)
         let result = uv_tcp_bind(server.handle, UnsafeMutablePointer<sockaddr>(addr), 0)
         addr.dealloc(1)
 
@@ -84,7 +84,7 @@ class Server {
         }
         
         // accept the connection
-        let result = uv_accept(UnsafeMutablePointer<uv_stream_t>(self.server.handle), client.handle)
+        let result = uv_accept(UnsafeMutablePointer<uv_stream_t>(self.server.handle), client.stream)
         
         if let error = Error(result: result) {
             client.close()

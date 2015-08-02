@@ -20,6 +20,7 @@
 		F44EABCF1B6CF2F6009F2286 /* test.net.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EABCE1B6CF2F6009F2286 /* test.net.swift */; };
 		F44EABD11B6D3E6D009F2286 /* test.handles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EABD01B6D3E6D009F2286 /* test.handles.swift */; };
 		F44EABD31B6D55DF009F2286 /* idle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EABD21B6D55DF009F2286 /* idle.swift */; };
+		F44EABD51B6E1EF5009F2286 /* net.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44EABD41B6E1EF5009F2286 /* net.swift */; };
 		F4D345B81B67AEC8002B9760 /* events.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D345B71B67AEC8002B9760 /* events.swift */; };
 		F4D345BA1B6C0450002B9760 /* socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D345B91B6C0450002B9760 /* socket.swift */; };
 /* End PBXBuildFile section */
@@ -52,6 +53,7 @@
 		F44EABCE1B6CF2F6009F2286 /* test.net.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = test.net.swift; sourceTree = "<group>"; };
 		F44EABD01B6D3E6D009F2286 /* test.handles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = test.handles.swift; sourceTree = "<group>"; };
 		F44EABD21B6D55DF009F2286 /* idle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = idle.swift; sourceTree = "<group>"; };
+		F44EABD41B6E1EF5009F2286 /* net.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = net.swift; sourceTree = "<group>"; };
 		F4D345B71B67AEC8002B9760 /* events.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = events.swift; sourceTree = "<group>"; };
 		F4D345B91B6C0450002B9760 /* socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = socket.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -111,6 +113,7 @@
 				F4D345B91B6C0450002B9760 /* socket.swift */,
 				F44EABC61B6CC607009F2286 /* buffer.swift */,
 				F44EABD21B6D55DF009F2286 /* idle.swift */,
+				F44EABD41B6E1EF5009F2286 /* net.swift */,
 			);
 			name = nodeswift;
 			sourceTree = "<group>";
@@ -181,6 +184,7 @@
 				F44EABC71B6CC607009F2286 /* buffer.swift in Sources */,
 				F4D345BA1B6C0450002B9760 /* socket.swift in Sources */,
 				F44EABCD1B6CF2DC009F2286 /* test.fs.swift in Sources */,
+				F44EABD51B6E1EF5009F2286 /* net.swift in Sources */,
 				F44EABD11B6D3E6D009F2286 /* test.handles.swift in Sources */,
 				F4D345B81B67AEC8002B9760 /* events.swift in Sources */,
 				F40ACA9B1B6555A6007BD21D /* main.swift in Sources */,
