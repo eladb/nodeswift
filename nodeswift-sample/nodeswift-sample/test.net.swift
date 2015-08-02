@@ -16,7 +16,7 @@ func testNet() {
         print("Listening on TCP port 5000")
     }
     
-    server.connect.on { connection in
+    server.connection.on { connection in
         print("new connection")
         
         connection.data.on { data in
@@ -26,9 +26,18 @@ func testNet() {
                 }
                 print(str, appendNewline: false)
                 let command = str.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-                if command == "terminate" {
+                
+                switch command {
+                case "terminate":
                     print("No more connections")
                     server.close()
+                    
+                case "pause":
+                    print("pausing this connection")
+                    connection.pause()
+                    
+                default:
+                    print("unknown command")
                 }
             }
         }
@@ -44,4 +53,5 @@ func testNet() {
     server.closed.once {
         print("server closed")
     }
+    
 }

@@ -16,10 +16,10 @@ class Server {
     
     // Events
     
-    var connect   = EventEmitter1<Socket>()
-    var error     = ErrorEventEmitter()
-    var listening = EventEmitter0()
-    var closed    = EventEmitter0()
+    var listening  = EventEmitter0()
+    var connection = EventEmitter1<Socket>()
+    var closed     = EventEmitter0()
+    var error      = ErrorEventEmitter()
     
     init() {
         self.server = Handle(closable: true)
@@ -45,20 +45,19 @@ class Server {
         addr.dealloc(1)
 
         if let err = Error(result: result) {
-            self.error.emit(err)
+            nextTick { self.error.emit(err) }
             return
         }
         
         let listen_result = uv_listen(UnsafeMutablePointer<uv_stream_t>(server.handle), backlog, connection_cb)
         if let err = Error(result: listen_result) {
-            self.error.emit(err)
+            nextTick { self.error.emit(err) }
             return
         }
         
         // ok. we are ready. emit the listening event on next tick
-        nextTick {
-            self.listening.emit()
-        }
+        nextTick { self.listening.emit() }
+
     }
     
     func close(callback: (() -> ())? = nil) {
@@ -69,7 +68,6 @@ class Server {
     }
     
     func onconnect(args: [AnyObject?]) {
-        
         // initialize client stream
         let client = Socket()
 
@@ -80,9 +78,12 @@ class Server {
                 self.clients.remove(client)
             }
             
+            // if the server is already closed, emit the 'closed' event
+            // when there are no more clients connected
             self.emitClosed()
         }
         
+        // accept the connection
         let result = uv_accept(UnsafeMutablePointer<uv_stream_t>(self.server.handle), client.handle)
         
         if let error = Error(result: result) {
@@ -90,7 +91,7 @@ class Server {
             self.error.emit(error)
         }
         else {
-            self.connect.emit(client)
+            self.connection.emit(client)
             client.resume()
         }
     }

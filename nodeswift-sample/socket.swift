@@ -22,8 +22,8 @@ class Socket: Hashable, Equatable {
     
     // Events
     
-    var data = EventEmitter1<Buffer>()
-    var end = EventEmitter0()
+    var data   = EventEmitter1<Buffer>()
+    var end    = EventEmitter0()
     var closed = EventEmitter0()
     
     init() {
@@ -48,6 +48,10 @@ class Socket: Hashable, Equatable {
     
     func resume() {
         uv_read_start(self.handle, alloc_cb, read_cb)
+    }
+    
+    func pause() {
+        uv_read_stop(self.handle)
     }
     
     func close() {
